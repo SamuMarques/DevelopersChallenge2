@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Importação</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Upload do arquivo .OFX</h6>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Upload", "OFXFile", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        <input type="file" id="files" name="files" multiple accept=".ofx">
+                        <input class="btn btn-primary" type="submit">
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,147 @@
+﻿@model DevelopersChallenge.Nibo.Models.ReconcileViewModel
+@using  DevelopersChallenge.Nibo.Models
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Importação</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Transação</h6>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="type">Tipo</label>
+                        <input type="text" class="form-control" value="@Model.ExternalTransaction.Type" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="value">Valor</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">R$</span>
+                            </div>
+                            <input type="text" class="form-control" value="@Model.ExternalTransaction.Value" readonly />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Data</label>
+                        <input type="text" class="form-control" value="@Model.ExternalTransaction.Date" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Descrição</label>
+                        <input type="text" class="form-control" value="@Model.ExternalTransaction.Description" readonly />
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <input type="button" onclick="Reconcile()" class="btn btn-primary" value="Salvar" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Lista de movimentações</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.InternalTransactions.Count() > 0)
+                    {
+                        <table id="table" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Tipo</th>
+                                    <th scope="col">Data</th>
+                                    <th scope="col">Valor</th>
+                                    <th scope="col">Descrição</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    foreach (var item in @Model.InternalTransactions)
+                                    {
+                                        <tr>
+                                            <td>@item.Type</td>
+                                            <td>@item.Date</td>
+                                            <td>@string.Format("{0:C}", item.Value)</td>
+                                            <td>@item.Description</td>
+                                            <td>
+                                                <div class="radio">
+                                                    @{
+                                                        <label><input type="radio" id='SelectedRow' onclick="SelectRow('@item.Id')" name="SelectedRow"></label>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            Nenhuma movimentação encontrada!
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Aviso!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Favor selecionar uma movimentação para fazer a conciliação.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const model = new Object();
+    model.externalTransaction = '@Model.ExternalTransaction.Id';
+
+    function Reconcile() {
+        debugger;
+        if (!model.selectedRow) {
+            $("#exampleModal").modal('toggle');
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/Reconcile/Update",
+            data: model,
+            success: function () {
+                window.location.replace("@Url.Action("Index", "ExternalTransaction")");
+            },
+            error: function (e) {
+                window.location.replace("@Url.Action("Index", "ExternalTransaction")");
+            }
+        });
+    }
+
+    function SelectRow(item) {
+        model.selectedRow = item;
+    }
+</script>

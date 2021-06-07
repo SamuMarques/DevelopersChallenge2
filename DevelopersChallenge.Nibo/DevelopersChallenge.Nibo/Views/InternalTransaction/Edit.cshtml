@@ -1,0 +1,67 @@
+﻿@model DevelopersChallenge.Nibo.Models.InternalTransactionCrudViewModel
+@using DevelopersChallenge.Nibo.KeyValue
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section script{
+
+    $('#date').val('@Model.Date.ToString("yyyy-MM-dd")');
+    $('#value').val('@Model.Value.ToString()');
+
+}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Editar movimentação</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Movimentação</h6>
+                </div>
+                @using (Html.BeginForm("Update", "InternalTransaction", Model, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="type">Tipo</label>
+                            @Html.DropDownListFor(model => model.Type, new TypeEnum().TypeList, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label for="value">Valor</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">R$</span>
+                                </div>
+                                @Html.TextBoxFor(model => model.Value,
+                                    new { @type = "currency", @id = "value", @class = "form-control money" })
+                                @Html.ValidationMessageFor(model => model.Value, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Data</label>
+                            @Html.TextBoxFor(model => model.Date,
+                                new { @type = "date", @id = "date", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Descrição</label>
+                            @Html.TextBoxFor(model => model.Description,
+                                new { @type = "text", @maxlength = "1000", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <input type="submit" class="btn btn-primary" value="Salvar" />
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
